@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Spud</title>
+    </head>
+
+    <body>
+        <script type="application/javascript" src="https://cdn.jsdelivr.net/jquery/2.1.4/jquery.min.js"></script>
+        <script type="application/javascript" src="https://trello.com/1/client.js?key=a81c570eb18445706c825ff545e301eb"> </script>
+        <script type="application/javascript" src="elm.js"></script>
+        <script type="application/javascript"">
+         Elm.fullscreen(Elm.Spud);
+
+         Trello.authorize({
+             type: "popup",
+             name: "Spud",
+             scope: {
+                 read: true,
+                 write: true,
+             },
+             expiration: "never",
+             persist: true,
+             success: function() {
+                 console.log("successfully authenticated");
+                 console.log(Trello.token());
+             },
+             error: function() {
+                 alert("failed to authenticate, try reloading")
+             }
+         });
+        </script>
+    </body>
+</html>
