@@ -11,11 +11,11 @@ import Board
 type alias Token = Maybe String
 
 type alias Model = { token : Token
-                   , boards : Board.Model }
+                   , board : Board.Model }
 
 init : Model
 init = { token = Nothing
-       , boards = Board.init }
+       , board = Board.init }
 
 authenticated : Model -> Bool
 authenticated model =
@@ -39,9 +39,9 @@ update action model =
 
     BoardAction sub ->
       let
-        (boards, fx) = Board.update sub model.boards
+        (board, fx) = Board.update sub model.board
       in
-        ( { model | boards <- boards }
+        ( { model | board <- board }
         , Effects.map BoardAction fx )
 
 -- VIEW
@@ -56,4 +56,4 @@ view : Signal.Address Action -> Model -> Html
 view address model =
   div []
       [ authView address model
-      , Board.view (Signal.forwardTo address BoardAction) model.boards ]
+      , Board.view (Signal.forwardTo address BoardAction) model.board ]
