@@ -3,11 +3,10 @@ module Trello where
 import Board
 import Effects
 import Html exposing (Html, div, text)
-import Html.Attributes exposing (classList)
-import Maybe
 import Signal
 import TList
 import Auth
+import Task
 
 -- MODEL
 
@@ -25,6 +24,7 @@ init = { auth = Auth.init
 type Action
   = AuthAction Auth.Action
   | BoardAction Board.Action
+  | ListAction TList.Action
 
 update : Action -> Model -> (Model, Effects.Effects Action)
 update action model =
@@ -39,9 +39,33 @@ update action model =
     BoardAction sub ->
       let
         (board, fx) = Board.update sub model.board (Auth.authParams model.auth)
+        extra = boardExtra sub
       in
         ( { model | board <- board }
-        , Effects.map BoardAction fx )
+        , Effects.batch [ Effects.map BoardAction fx
+                        , extra ])
+
+    ListAction sub ->
+      let
+        (lists, fx) = TList.update sub model.lists (Auth.authParams model.auth)
+      in
+        ( { model | lists <- lists }
+        , Effects.map ListAction fx )
+
+boardExtra : Board.Action -> Effects.Effects Action
+boardExtra action =
+  case action of
+    Board.Select id ->
+      case id of
+        Nothing -> Effects.none
+        Just id ->
+          TList.Load id
+            |> ListAction
+            |> Task.succeed
+            |> Effects.task
+
+    _ -> Effects.none
+
 
 -- VIEW
 
@@ -50,4 +74,5 @@ view address model =
   div []
       [ model |> toString |> text
       , Auth.authView (Signal.forwardTo address AuthAction) model.auth
-      , Board.view (Signal.forwardTo address BoardAction) model.board ]
+      , Board.view (Signal.forwardTo address BoardAction) model.board
+      , TList.view (Signal.forwardTo address ListAction) model.lists ]
