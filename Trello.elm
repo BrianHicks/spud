@@ -4,15 +4,18 @@ import Effects
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (classList)
 import Signal
+import Board
 
 -- MODEL
 
 type alias Token = Maybe String
 
-type alias Model = { token : Token }
+type alias Model = { token : Token
+                   , boards : Board.Model }
 
 init : Model
-init = { token = Nothing }
+init = { token = Nothing
+       , boards = Board.init }
 
 authenticated : Model -> Bool
 authenticated model =
@@ -24,6 +27,7 @@ authenticated model =
 
 type Action
   = NewToken Token
+  | BoardAction Board.Action
 
 toNewToken : Token -> Action
 toNewToken token = NewToken token
@@ -32,6 +36,13 @@ update : Action -> Model -> (Model, Effects.Effects Action)
 update action model =
   case action of
     NewToken token -> ({ model | token <- token }, Effects.none)
+
+    BoardAction sub ->
+      let
+        (boards, fx) = Board.update sub model.boards
+      in
+        ( { model | boards <- boards }
+        , Effects.map BoardAction fx )
 
 -- VIEW
 
@@ -43,4 +54,6 @@ authView address model =
 
 view : Signal.Address Action -> Model -> Html
 view address model =
-  authView address model
+  div []
+      [ authView address model
+      , Board.view (Signal.forwardTo address BoardAction) model.boards ]
