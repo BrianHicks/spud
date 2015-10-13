@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Spud</title>
+        <link href="style.css" rel="stylesheet"/>
     </head>
 
     <body>
@@ -9,7 +10,12 @@
         <script type="application/javascript" src="https://trello.com/1/client.js?key=a81c570eb18445706c825ff545e301eb"> </script>
         <script type="application/javascript" src="elm.js"></script>
         <script type="application/javascript"">
-         Elm.fullscreen(Elm.Spud);
+         var spud = Elm.fullscreen(
+             Elm.Spud,
+             {token: null, key: null}
+         );
+
+         spud.ports.key.send("a81c570eb18445706c825ff545e301eb")
 
          Trello.authorize({
              type: "popup",
@@ -21,8 +27,7 @@
              expiration: "never",
              persist: true,
              success: function() {
-                 console.log("successfully authenticated");
-                 console.log(Trello.token());
+                 spud.ports.token.send(Trello.token())
              },
              error: function() {
                  alert("failed to authenticate, try reloading")
