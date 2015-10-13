@@ -2,7 +2,7 @@ module Trello (Model, init, toNewToken, update, view) where
 
 import Effects
 import Html exposing (Html, div, text)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (classList)
 import Signal
 
 -- MODEL
@@ -37,8 +37,9 @@ update action model =
 
 authView : Signal.Address Action -> Model -> Html
 authView address model =
-  div [class (if authenticated model then "authenticated" else "unauthenticated")]
-      [text (if authenticated model then "Authenticated" else "Not Yet Authenticated")]
+  div [ classList [ ( "authenticated", authenticated model )
+                  , ( "auth", True ) ] ]
+      [ text (if authenticated model then "Authenticated" else "Not Yet Authenticated") ]
 
 view : Signal.Address Action -> Model -> Html
 view address model =

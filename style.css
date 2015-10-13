@@ -1,0 +1,12 @@
+/*
+ * styles for spud
+ */
+
+/* token and auth */
+.auth {
+    color: #B88;
+}
+
+.auth.authenticated {
+    color: #8B8;
+}
