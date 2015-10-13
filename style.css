@@ -10,3 +10,53 @@
 .auth.authenticated {
     color: #8B8;
 }
+
+/* boards */
+.boards .error {
+    padding: 10px;
+    background: #FEE;
+    color: #B88;
+    border-radius: 5px;
+}
+
+.boards .empty {
+    background: #EEE;
+    border-radius: 5px;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    width: 200px;
+}
+
+.boards .empty button {
+    background-color: transparent;
+    border: 1px solid black;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.boards ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.board {
+    float: left;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid grey;
+}
+
+.board.selected {
+    border: 1px solid #363;
+    background-color: #CEC;
+    color: #363;
+}
+
+.board .title {
+    font-size: 0.9em;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}

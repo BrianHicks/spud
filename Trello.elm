@@ -24,9 +24,12 @@ init = { token = Nothing
 
 authenticated : Model -> Bool
 authenticated model =
-  case model.token of
-    Nothing -> False
-    Just _  -> True
+  (case model.token of
+     Nothing -> False
+     Just _  -> True) &&
+  (case model.key of
+     Nothing -> False
+     Just _ -> True)
 
 authParams : Model -> List (String, String)
 authParams model =
@@ -60,7 +63,8 @@ authView : Signal.Address Action -> Model -> Html
 authView address model =
   div [ classList [ ( "authenticated", authenticated model )
                   , ( "auth", True ) ] ]
-      [ text (if authenticated model then "Authenticated" else "Not Yet Authenticated") ]
+      [ text (if authenticated model then "Authenticated" else "Not Yet Authenticated")
+      , model |> toString |> text ]
 
 view : Signal.Address Action -> Model -> Html
 view address model =
