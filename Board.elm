@@ -59,7 +59,7 @@ board address model selected =
 boards : Signal.Address Action -> Model -> Html
 boards address model =
   if List.isEmpty model.boards
-     then div [ class "empty" ] [ text "no boards loaded" ]
+     then div [ classList [ ("empty", True), ("boards", True) ] ] [ text "no boards loaded" ]
      else ul [ class "boards" ]
              (List.map (\b -> board address b (isSelected b model.selected)) model.boards)
 
