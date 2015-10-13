@@ -9,7 +9,8 @@ import Html exposing (Html)
 
 app : StartApp.App Trello.Model
 app = StartApp.start { init = (Trello.init, Effects.none)
-                     , inputs = [ Signal.map Trello.toNewToken token ]
+                     , inputs = [ Signal.map Trello.NewToken token
+                                , Signal.map Trello.NewKey key ]
                      , update = Trello.update
                      , view = Trello.view }
 
@@ -20,3 +21,5 @@ port tasks : Signal (Task.Task Effects.Never ())
 port tasks = app.tasks
 
 port token : Signal (Maybe String)
+
+port key : Signal (Maybe String)

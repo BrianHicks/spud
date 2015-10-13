@@ -34,8 +34,8 @@ type Action
   | Boards (List Board)
   | Select (Maybe ID)
 
-update : Action -> Model -> (Model, Effects.Effects Action)
-update action model =
+update : Action -> Model -> List (String, String) -> (Model, Effects.Effects Action)
+update action model auth =
   case action of
     Load -> Debug.crash "TODO"
 
