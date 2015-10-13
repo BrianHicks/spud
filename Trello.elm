@@ -6,68 +6,48 @@ import Html exposing (Html, div, text)
 import Html.Attributes exposing (classList)
 import Maybe
 import Signal
+import TList
+import Auth
 
 -- MODEL
 
-type alias Token = Maybe String
-
-type alias Key = Maybe String
-
-type alias Model = { token : Token
-                   , key : Key
-                   , board : Board.Model }
+type alias Model = { auth : Auth.Model
+                   , board : Board.Model
+                   , lists : TList.Model }
 
 init : Model
-init = { token = Nothing
-       , key = Nothing
-       , board = Board.init }
-
-authenticated : Model -> Bool
-authenticated model =
-  (case model.token of
-     Nothing -> False
-     Just _  -> True) &&
-  (case model.key of
-     Nothing -> False
-     Just _ -> True)
-
-authParams : Model -> List (String, String)
-authParams model =
-  [ ( "token", Maybe.withDefault "" model.token )
-  , ( "key", Maybe.withDefault "" model.key ) ]
+init = { auth = Auth.init
+       , board = Board.init
+       , lists = TList.init }
 
 -- UPDATE
 
 type Action
-  = NewToken Token
-  | NewKey Key
+  = AuthAction Auth.Action
   | BoardAction Board.Action
 
 update : Action -> Model -> (Model, Effects.Effects Action)
 update action model =
   case action of
-    NewToken token -> ({ model | token <- token }, Effects.none)
-
-    NewKey key -> ({ model | key <- key }, Effects.none)
+    AuthAction sub ->
+      let
+        (auth, fx) = Auth.update sub model.auth
+      in
+        ( { model | auth <- auth }
+        , Effects.map AuthAction fx )
 
     BoardAction sub ->
       let
-        (board, fx) = Board.update sub model.board (authParams model)
+        (board, fx) = Board.update sub model.board (Auth.authParams model.auth)
       in
         ( { model | board <- board }
         , Effects.map BoardAction fx )
 
 -- VIEW
 
-authView : Signal.Address Action -> Model -> Html
-authView address model =
-  div [ classList [ ( "authenticated", authenticated model )
-                  , ( "auth", True ) ] ]
-      [ text (if authenticated model then "Authenticated" else "Not Yet Authenticated")
-      , model |> toString |> text ]
-
 view : Signal.Address Action -> Model -> Html
 view address model =
   div []
-      [ authView address model
+      [ model |> toString |> text
+      , Auth.authView (Signal.forwardTo address AuthAction) model.auth
       , Board.view (Signal.forwardTo address BoardAction) model.board ]

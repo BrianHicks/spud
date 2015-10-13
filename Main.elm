@@ -1,16 +1,17 @@
 module Spud where
 
+import Auth
 import Effects
+import Html exposing (Html)
+import Signal
 import StartApp
 import Task
 import Trello
-import Signal
-import Html exposing (Html)
 
 app : StartApp.App Trello.Model
 app = StartApp.start { init = (Trello.init, Effects.none)
-                     , inputs = [ Signal.map Trello.NewToken token
-                                , Signal.map Trello.NewKey key ]
+                     , inputs = [ Signal.map (\x -> (Auth.NewToken x) |> Trello.AuthAction) token
+                                , Signal.map (\x -> (Auth.NewKey x) |> Trello.AuthAction) key ]
                      , update = Trello.update
                      , view = Trello.view }
 

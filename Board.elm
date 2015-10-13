@@ -9,6 +9,7 @@ import Http
 import Json.Decode exposing ((:=), list, object2, string)
 import List
 import Task
+import URL
 
 -- MODEL
 
@@ -41,7 +42,7 @@ type Action
   | Boards (Maybe (List Board))
   | Select (Maybe ID)
 
-update : Action -> Model -> List (String, String) -> (Model, Effects Action)
+update : Action -> Model -> URL.Params -> (Model, Effects Action)
 update action model auth =
   case action of
     Load -> ({ model | error <- Nothing
@@ -63,7 +64,7 @@ update action model auth =
 
 -- EFFECTS
 
-getBoards : List (String, String) -> Effects Action
+getBoards : URL.Params -> Effects Action
 getBoards auth =
   Http.get (list decodeBoard) (boardsUrl auth)
     |> Task.toMaybe
@@ -76,13 +77,13 @@ decodeBoard =
           ("id" := string)
           ("name" := string)
 
-boardsUrl : List (String, String) -> String
+boardsUrl : URL.Params -> String
 boardsUrl auth =
   let filters = [ ("filter", "open")
                 , ("fields", "id,name") ]
       query = filters ++ auth
   in
-    Http.url "https://api.trello.com/1/members/me/boards" query
+    Http.url (URL.rooted "/1/members/me/boards") query
 
 -- VIEW
 
